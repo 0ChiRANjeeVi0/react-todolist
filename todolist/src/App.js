@@ -9,7 +9,8 @@ export default function App(){
   const[todos, setTodos] = useState([]);
   const addTodo = async() =>{
     try{
-      await addDoc(collection(db,"todos"),{
+      const userRef = collection(db,"todos");
+      await addDoc(userRef,{
         todo:input,
         id:todos.length,
       })
@@ -22,7 +23,8 @@ export default function App(){
   useEffect(() =>{
     const getData = async() =>{
       try{
-        await onSnapshot(collection(db,"todos"),orderBy('todo'),(snapshot) =>{
+        const userRef = collection(db,"todos") 
+        await onSnapshot(userRef,(snapshot) =>{
         setTodos(snapshot.docs.map((doc) =>({id:doc.id,todo:doc.data().todo,idx:doc.data().id})))
       })
       }catch(err){
