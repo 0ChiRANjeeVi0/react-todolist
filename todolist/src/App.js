@@ -1,10 +1,13 @@
 import React,{useState,useEffect} from 'react';
 import{Navbar, Container,InputGroup,FormControl} from "react-bootstrap";
 import Todo from './components/Todo.js';
-import db from './firebase';
+import {getFirestore} from 'firebase/firestore';
 import{collection, addDoc, onSnapshot,orderBy} from "firebase/firestore";
+import firebaseApp from './firebase.js';
+
 
 export default function App(){
+  const db = getFirestore();
   const [input, setInput] = useState('');
   const[todos, setTodos] = useState([]);
   const addTodo = async() =>{

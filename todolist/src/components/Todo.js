@@ -1,9 +1,9 @@
 import React,{useState} from 'react';
 import {Card,Modal,Button,FormControl} from 'react-bootstrap';
-import db from '../firebase';
-import {deleteDoc, doc,setDoc} from 'firebase/firestore';
+import firebaseApp from '../firebase';
+import {deleteDoc, doc,setDoc,getFirestore} from 'firebase/firestore';
 export default function Todo(props){
-
+const db = getFirestore();
 const[show, setShow] = useState(false);
 const[input, setInput] = useState('');
 const handleClose =() => setShow(false);
