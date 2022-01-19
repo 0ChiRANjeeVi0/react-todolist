@@ -2,40 +2,59 @@ import React,{useState,useEffect} from 'react';
 import{Navbar, Container,InputGroup,FormControl} from "react-bootstrap";
 import Todo from './components/Todo.js';
 import {getFirestore} from 'firebase/firestore';
-import{collection, addDoc, onSnapshot,orderBy} from "firebase/firestore";
+import{collection, addDoc, onSnapshot,orderBy,query,serverTimestamp} from "firebase/firestore";
 import firebaseApp from './firebase.js';
+import Auth from "./components/Auth.js";
 
 
 export default function App(){
   const db = getFirestore();
+  const [usercollectionref, setUserCollectionRef] = useState("");
   const [input, setInput] = useState('');
-  const[todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([]);
+  const [authState, setAuthState] = useState(false);
+  const addUserref = (e) =>{
+    setUserCollectionRef(e);
+  }
+  const setAuthStateTrue = () =>{
+    setAuthState(true);
+  }
+  const setAuthStateFalse = () =>{
+    setAuthState(false);
+    setTodos([]);
+  }
   const addTodo = async() =>{
-    try{
-      const userRef = collection(db,"todos");
-      await addDoc(userRef,{
-        todo:input,
-        id:todos.length,
+    if(!usercollectionref){
+      alert("login to add");
+    }else{
+      try{
+        const userRef = collection(db,usercollectionref);
+        await addDoc(userRef,{
+          todo:input,
+          timestamp:serverTimestamp(),
       })
-    }catch(err){
-      console.log(err);
+      }catch(err){
+        console.log(err);
+      }
+      setInput('');
     }
-    console.log("data added successfully");
-    setInput('');
+     
   }
   useEffect(() =>{
     const getData = async() =>{
       try{
-        const userRef = collection(db,"todos") 
-        await onSnapshot(userRef,(snapshot) =>{
-        setTodos(snapshot.docs.map((doc) =>({id:doc.id,todo:doc.data().todo,idx:doc.data().id})))
+        const userRef = collection(db,usercollectionref) 
+        const q = query(userRef,orderBy("timestamp"));
+        await onSnapshot(q,(snapshot) =>{
+
+        setTodos(snapshot.docs.map((doc) =>({id:doc.id,todo:doc.data().todo})))
       })
       }catch(err){
         console.log(err);
       }
     }
     getData()
-},[])
+},[usercollectionref])
   return(
     <div className="">
     {/*navigation bar */}
@@ -46,8 +65,7 @@ export default function App(){
                <Navbar.Toggle aria-controls="nav-collapse" />
               <Navbar.Collapse id="nav-collapse">
                 <div className="ms-auto">
-                  <button className="btn btn-primary">Sign In</button>
-                  <button className="btn btn-primary mx-2">Sign Up</button>
+                  <Auth userRef={addUserref} authState={authState} setAuthStateTrue={setAuthStateTrue} setAuthStateFalse={setAuthStateFalse}/>
                 </div>
               </Navbar.Collapse>
             </Container>
@@ -66,7 +84,7 @@ export default function App(){
       <section>
        {
         todos.map((todo) =>(
-          <Todo id={todo.id} todo={todo.todo}/>
+          <Todo id={todo.id} todo={todo.todo} userRef={usercollectionref}/>
           ))
        }
       </section>

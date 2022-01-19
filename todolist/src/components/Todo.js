@@ -1,7 +1,8 @@
 import React,{useState} from 'react';
 import {Card,Modal,Button,FormControl} from 'react-bootstrap';
 import firebaseApp from '../firebase';
-import {deleteDoc, doc,setDoc,getFirestore} from 'firebase/firestore';
+import {deleteDoc, doc,setDoc,getFirestore,serverTimestamp} from 'firebase/firestore';
+
 export default function Todo(props){
 const db = getFirestore();
 const[show, setShow] = useState(false);
@@ -11,7 +12,7 @@ const handleOpen = () =>setShow(true);
 
 const deleteTodo = async() =>{
 	try{
-		const docRef = doc(db,"todos",props.id)
+		const docRef = doc(db,props.userRef,props.id)
 		await deleteDoc(docRef);
 	}catch(err){
 		console.log(err);
@@ -20,17 +21,16 @@ const deleteTodo = async() =>{
 }
 const updateData = async() =>{
 	try{
-		const docRef = doc(db,"todos",props.id);
+		const docRef = doc(db,props.userRef,props.id);
 		await setDoc(docRef,{
-			id:props.id,
 			todo:input,
+			timestamp:serverTimestamp(),
 		})
 	}catch(err){
 		console.log(err);
 	}
 	handleClose();
 	setInput('');
-	console.log("data Updated");
 }
 	return(
 		<div className="container">
