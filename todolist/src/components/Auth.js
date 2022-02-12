@@ -9,7 +9,7 @@ const [signin, setSignin] = useState(false);
 const [signup, setSignup] = useState(false);
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
-
+const [errstatus, setErrstatus] = useState("");
 const createUser = async() =>{
 	try{
 		const user = await createUserWithEmailAndPassword(auth,email,password)
@@ -18,11 +18,15 @@ const createUser = async() =>{
 			props.userRef(userDetails.user.uid);
 		})
 	}catch(err){
-		console.log(err);
+		if(err.messgage = "Firebase: Error (auth/email-already-in-use)"){
+			setErrstatus("User Already Exsist");
+		}
+		setTimeout(() =>{
+			setErrstatus('');
+		},3000)
 	}
 	setEmail('');
 	setPassword('');
-	setSignup(false);
 
 }
 const login = async() =>{
@@ -34,7 +38,12 @@ const login = async() =>{
 		setSignin(false);
 	})
 	}catch(err){
-		console.log(err);
+		if(err.message = "Firebase: Error (auth/user-not-found)"){
+			setErrstatus("User Not Found!!!");
+		}
+		setTimeout(() =>{
+			setErrstatus("");
+		},3000)
 	}
 }
 const logout = async() => {
@@ -56,6 +65,7 @@ const logout = async() => {
 						<Form.Label>Enter Password</Form.Label>
 						<Form.Control type="password" onChange={(e) => setPassword(e.target.value)} />
 					</Form>
+					<p>{errstatus}</p>
 					<button onClick={createUser} className="mt-2 btn btn-primary">Sign Up</button>
 					<button onClick={(e) => setSignup(false)} className="mt-2 mx-2 btn btn-danger">Close</button>
 				</Modal.Body>
@@ -72,8 +82,9 @@ const logout = async() => {
 						<Form.Label>Enter Password</Form.Label>
 						<Form.Control type="password" onChange={(e) => setPassword(e.target.value)} />
 					</Form>
+					<p>{errstatus}</p>
 					<button onClick={login} className="mt-2 btn btn-primary">Sign In</button>
-					<button onClick={(e) => setSignin(false)} className="mt-2 mx-2 btn btn-danger">Close</button>
+					<button onClick={(e) => {setSignin(false)}} className="mt-2 mx-2 btn btn-danger">Close</button>
 				</Modal.Body>
 				
 			</Modal>

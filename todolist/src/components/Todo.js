@@ -24,8 +24,8 @@ const updateData = async() =>{
 		const docRef = doc(db,props.userRef,props.id);
 		await setDoc(docRef,{
 			todo:input,
-			timestamp:serverTimestamp(),
-		})
+			
+		},{merge:true})
 	}catch(err){
 		console.log(err);
 	}

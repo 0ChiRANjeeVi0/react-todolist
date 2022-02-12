@@ -76,7 +76,7 @@ export default function App(){
         <Container>
           <InputGroup className="mt-3">
               <FormControl value={input} onChange={(e) => setInput(e.target.value)} placeholder="Enter Todo"></FormControl>
-              <InputGroup.Text type="submit" className="btn btn-primary" disabled={!input} onClick={addTodo}>Add Todo</InputGroup.Text>
+              <button type="submit" className="btn btn-primary" disabled={!input} onClick={addTodo}>Add Todo</button>
           </InputGroup>
         </Container>
       </section>
